@@ -49,59 +49,88 @@ function runFunctionsForPage() {
     (window.location.href.endsWith('house_data.html')) {
         document.getElementById("chamber-data-house").innerHTML =
             tabulateChamberData(houseData);
-        tableFilter('chamber-data-house');
+        document.getElementById("state-select").innerHTML =
+            buildDropdown(houseData);
+        tableFilters('chamber-data-house', "state-select");
     } else if
     //senate_data.html
     (window.location.href.endsWith('senate_data.html')) {
         document.getElementById("chamber-data-senate").innerHTML =
             tabulateChamberData(senateData);
-        tableFilter('chamber-data-senate');
+        document.getElementById("state-select").innerHTML =
+            buildDropdown(senateData);
+        tableFilters('chamber-data-senate');
     }
 }
 
-//checkboxes
-function tableFilter(tableID) {
+//build dropdown
+function buildDropdown(chamberData) {
+    let states = []
+    let stateOptions = "<option value='All' selected >All</option>";
+    for (let i = 0; i < chamberData.results[0].members.length; i++)
+        if (states.includes(chamberData.results[0].members[i].state) === false) {
+            states.push(chamberData.results[0].members[i].state);
+        }
+    states.sort();
+    for (let i = 0; i < states.length; i++) {
+        stateOptions += "<option value='" +
+            states[i] + "'>" +
+            states[i] +
+            "</option>"
+    }
+    return stateOptions;
+}
+
+//tableFilters
+
+function tableFilters(tableID) {
     let table = document.getElementById(tableID);
     let tRows = table.getElementsByTagName('tr');
-    let rowParty;
-    console.log(tRows);
     let demCheckbox = document.getElementById('democrat-checkbox');
     let repCheckbox = document.getElementById('republican-checkbox');
     let indCheckbox = document.getElementById('independent-checkbox');
     let checkboxes = [demCheckbox, repCheckbox, indCheckbox];
-    let filterFor;
+    let dropdown = document.getElementById('state-select');
+    let selectedParties = ["D", "R", "I"];
+    let selectedStates = ['All'];
+
     checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener("change", function () {
-            filterFor = [];
+            selectedParties = [];
             if (demCheckbox.checked) {
-                filterFor.push("D");
+                selectedParties.push("D");
             }
             if (repCheckbox.checked) {
-                filterFor.push("R");
+                selectedParties.push("R");
             }
             if (indCheckbox.checked) {
-                filterFor.push("I");
+                selectedParties.push("I");
+            } else if (demCheckbox.checked === false && repCheckbox.checked === false && indCheckbox.checked === false) {
+                selectedParties.push("D", "R", "I");
             }
-            console.log(filterFor);
-
-            if (demCheckbox.checked === false && repCheckbox.checked === false && indCheckbox.checked === false) {
-                for (let i = 1; i < tRows.length; i++) {
-                    tRows[i].style.display = "";
-                }
-            } else {
-
-                for (let i = 1; i < tRows.length; i++) {
-                    rowParty = tRows[i].getElementsByTagName("td")[1].getAttribute('value')
-                    if (filterFor.includes(rowParty)) {
-                        tRows[i].style.display = "";
-                    } else {
-                        tRows[i].style.display = "none";
-                    }
-
-                }
-            }
+            filterByPartyAndState(tRows, selectedParties, selectedStates);
         })
     })
+    dropdown.addEventListener("change", function () {
+        selectedStates = [];
+        selectedStates.push(dropdown.options[dropdown.selectedIndex].value);
+        filterByPartyAndState(tRows, selectedParties, selectedStates);
+    });
+}
+
+//filterByPartyAndState
+function filterByPartyAndState(tableRows, parties, states) {
+    let rowParty
+    let rowState
+    for (let i = 1; i < tableRows.length; i++) {
+        rowParty = tableRows[i].getElementsByTagName("td")[1].getAttribute('value');
+        rowState = tableRows[i].getElementsByTagName("td")[2].getAttribute('value');
+        if ((states.includes(rowState) || states.includes('All')) && parties.includes(rowParty)) {
+            tableRows[i].style.display = "";
+        } else {
+            tableRows[i].style.display = "none";
+        }
+    }
 }
 
 //make at a glance tables
@@ -116,7 +145,7 @@ function tabulateChamberGlance(chamberData) {
     chamberMembers = chamberData.results[0].members;
 
 
-    let tableContents = 
+    let tableContents =
         "<caption style='caption-side: top;'> The " + congressNumber + " " + chamberName + " at a Glance</caption>" +
         "<thead>" +
         "<tr>" +
@@ -162,7 +191,7 @@ function tabulateMostLoyal(chamberData) {
         "<thead>" +
         "<tr>" +
         "<th>Name</th>" +
-        "<th class='text-center'>Number of Party Votes</th>" +
+        "<th class='text-center'>Party Votes</th>" +
         "<th class='text-center'>Party Loyalty</th>" +
         "<tr>" +
         "</thead>" +
@@ -193,7 +222,7 @@ function tabulateLeastLoyal(chamberData) {
         "<thead>" +
         "<tr>" +
         "<th>Name</th>" +
-        "<th class='text-center'>Number of Party Votes</th>" +
+        "<th class='text-center'>Party Votes</th>" +
         "<th class='text-center'>Party Loyalty</th>" +
         "<tr>" +
         "</thead>" +
@@ -225,8 +254,8 @@ function tabulateMostEngaged(chamberData) {
         "<thead>" +
         "<tr>" +
         "<th>Name</th>" +
-        "<th class='text-center'>Number of Votes Missed</th>" +
-        "<th class='text-center'>Percent of Votes Missed</th>" +
+        "<th class='text-center'>Votes Missed</th>" +
+        "<th class='text-center'>% Votes Missed</th>" +
         "<tr>" +
         "</thead>" +
         "<tbody>";
@@ -257,8 +286,8 @@ function tabulateLeastEngaged(chamberData) {
         "<thead>" +
         "<tr>" +
         "<th>Name</th>" +
-        "<th class='text-center'>Number of Votes Missed</th>" +
-        "<th class='text-center'>Percent of Votes Missed</th>" +
+        "<th class='text-center'>Votes Missed</th>" +
+        "<th class='text-center'>% Votes Missed</th>" +
         "<tr>" +
         "</thead>" +
         "<tbody>";
@@ -290,39 +319,34 @@ function makeStatisticsObject(chamberData) {
                 members: [],
                 numOfMembers: 0,
                 partyLoyalty: 0,
-                partyAttendance: 0,
             },
             repParty: {
                 name: 'Republicans',
                 members: [],
                 numOfMembers: 0,
                 partyLoyalty: 0,
-                partyAttendance: 0,
             },
             indParty: {
                 name: 'Independents',
                 members: [],
                 numOfMembers: 0,
                 partyLoyalty: 0,
-                partyAttendance: 0,
             },
         },
         totalMembers: 0,
-
         bestAttendance: 0,
-
         worstAttendance: 0,
-
         averageAttendance: 0,
-
         mostLoyal: 0,
-
         leastLoyal: 0,
-
         averageLoyalty: 0,
 
     };
+    fillStatisticsObject(statistics, chamberData);
+    return statistics
+}
 
+function fillStatisticsObject(statistics, chamberData) {
     chamberData.results[0].members.forEach(function (member) { // fill party members arrays
         if (member.party == "D") {
             statistics.parties.demParty.members.push(member);
@@ -330,128 +354,76 @@ function makeStatisticsObject(chamberData) {
             statistics.parties.repParty.members.push(member);
         } else if (member.party == "I") {
             statistics.parties.indParty.members.push(member);
-        } else {
-            console.log("Someone has no party!");
         }
     });
-
-    // count total members
+    //count total members
     statistics.totalMembers =
         statistics.parties.demParty.members.length +
         statistics.parties.repParty.members.length +
         statistics.parties.indParty.members.length
-
-    statistics.parties.demParty.numOfMembers = statistics.parties.demParty.members.length; // calculate party lengths
+    // calculate party lengths
+    statistics.parties.demParty.numOfMembers = statistics.parties.demParty.members.length;
     statistics.parties.repParty.numOfMembers = statistics.parties.repParty.members.length;
     statistics.parties.indParty.numOfMembers = statistics.parties.indParty.members.length;
+    //party loyalties
+    statistics.averageLoyalty = calculatePartyLoyalty(chamberData.results[0].members);
+    statistics.parties.demParty.partyLoyalty = calculatePartyLoyalty(statistics.parties.demParty.members);
+    statistics.parties.repParty.partyLoyalty = calculatePartyLoyalty(statistics.parties.repParty.members);
+    statistics.parties.indParty.partyLoyalty = calculatePartyLoyalty(statistics.parties.indParty.members);
 
-    //calculate party loyalties
-    //All
-    for (let i = 0; i < chamberData.results[0].members.length; i++) {
-        statistics.averageLoyalty += chamberData.results[0].members[i].votes_with_party_pct;
-    }
-    statistics.averageLoyalty /= chamberData.results[0].members.length;
-    //Dems
-    for (let i = 0; i < statistics.parties.demParty.members.length; i++) {
-        statistics.parties.demParty.partyLoyalty += statistics.parties.demParty.members[i].votes_with_party_pct;
-    }
-    statistics.parties.demParty.partyLoyalty /= statistics.parties.demParty.members.length;
-
-    //Reps
-    for (let i = 0; i < statistics.parties.repParty.members.length; i++) {
-        statistics.parties.repParty.partyLoyalty += statistics.parties.repParty.members[i].votes_with_party_pct;
-    }
-    statistics.parties.repParty.partyLoyalty /= statistics.parties.repParty.members.length;
-
-    //Inds
-    for (let i = 0; i < statistics.parties.indParty.members.length; i++) {
-        statistics.parties.indParty.partyLoyalty += statistics.parties.indParty.members[i].votes_with_party_pct;
-    }
-    statistics.parties.indParty.partyLoyalty /= statistics.parties.indParty.members.length;
-
-
-
-
-    //calculate party attendance 
-    //All
-    for (let i = 0; i < chamberData.results[0].members.length; i++) {
-        statistics.averageAttendance += chamberData.results[0].members[i].missed_votes_pct;
-    }
-    statistics.averageAttendance /= chamberData.results[0].members.length;
-    statistics.averageAttendance = 100 - statistics.averageAttendance;
-
-
-    //DEMS
-
-    for (let i = 0; i < statistics.parties.demParty.members.length; i++) {
-        statistics.parties.demParty.partyAttendance += statistics.parties.demParty.members[i].missed_votes_pct;
-    }
-    statistics.parties.demParty.partyAttendance /= statistics.parties.demParty.members.length;
-    statistics.parties.demParty.partyAttendance = 100 - statistics.parties.demParty.partyAttendance;
-
-    //REPS
-
-    for (let i = 0; i < statistics.parties.repParty.members.length; i++) {
-        statistics.parties.repParty.partyAttendance += statistics.parties.repParty.members[i].missed_votes_pct;
-    }
-    statistics.parties.repParty.partyAttendance /= statistics.parties.repParty.members.length;
-    statistics.parties.repParty.partyAttendance = 100 - statistics.parties.repParty.partyAttendance;
-
-    //INDS
-
-    for (let i = 0; i < statistics.parties.indParty.members.length; i++) {
-        statistics.parties.indParty.partyAttendance += statistics.parties.indParty.members[i].missed_votes_pct;
-    }
-    statistics.parties.indParty.partyAttendance /= statistics.parties.indParty.members.length;
-    statistics.parties.indParty.partyAttendance = 100 - statistics.parties.indParty.partyAttendance;
-
-
-
-    //Overall Attendance & Loyalty
-    //Best 10% (including all ties)
-    function findTop10Pct(chamberMembers, statistic) {
-        let statList = [];
-        for (let i = 0; i < chamberMembers.length; i++) {
-            statList.push(chamberMembers[i][statistic]);
-        }
-        statList.sort(function (a, b) {
-            return a - b
-        });
-        let lowestTop = statList[statList.length - Math.round(statList.length / 10)]; //bottom of the top 10%
-        let top10Pct = [];
-        top10Pct = chamberMembers.filter(function (member) {
-            return member[statistic] >= lowestTop
-        });
-        top10Pct.sort((a, b) => (a[statistic] < b[statistic]) ? 1 : -1);
-        return top10Pct;
-
-    }
-    // worst 10%, (including all ties)
-    function findBot10Pct(chamberMembers, statistic) {
-        let statList = [];
-        for (let i = 0; i < chamberMembers.length; i++) {
-            statList.push(chamberMembers[i][statistic]);
-        }
-        statList.sort(function (a, b) {
-            return a - b
-        });
-        let highestBot = statList[Math.round(statList.length / 10) - 1]; //top of the bottom 10%
-        let bottom10Pct = [];
-        bottom10Pct = chamberMembers.filter(function (member) {
-            return member[statistic] <= highestBot
-        });
-        bottom10Pct.sort((a, b) => (a[statistic] > b[statistic]) ? 1 : -1);
-        return bottom10Pct;
-
-    }
     //fill best/worst 10% stats
     statistics.bestAttendance = findBot10Pct(chamberData.results[0].members, 'missed_votes_pct');
     statistics.worstAttendance = findTop10Pct(chamberData.results[0].members, 'missed_votes_pct');
     statistics.leastLoyal = findBot10Pct(chamberData.results[0].members, 'votes_with_party_pct');
     statistics.mostLoyal = findTop10Pct(chamberData.results[0].members, 'votes_with_party_pct');
-    return statistics;
 }
 
+//calculate party loyalties
+function calculatePartyLoyalty(partyMembersList) {
+    let average = 0;
+    for (let i = 0; i < partyMembersList.length; i++) {
+        average += partyMembersList[i].votes_with_party_pct;
+    }
+    average /= partyMembersList.length;
+    return average
+}
+
+//Best 10% (including all ties)
+function findTop10Pct(chamberMembers, statistic) {
+    let statList = [];
+    for (let i = 0; i < chamberMembers.length; i++) {
+        statList.push(chamberMembers[i][statistic]);
+    }
+    statList.sort(function (a, b) {
+        return a - b
+    });
+    let lowestTop = statList[statList.length - Math.round(statList.length / 10)]; //bottom of the top 10%
+    let top10Pct = [];
+    top10Pct = chamberMembers.filter(function (member) {
+        return member[statistic] >= lowestTop
+    });
+    top10Pct.sort((a, b) => (a[statistic] < b[statistic]) ? 1 : -1);
+    return top10Pct;
+
+}
+// worst 10%, (including all ties)
+function findBot10Pct(chamberMembers, statistic) {
+    let statList = [];
+    for (let i = 0; i < chamberMembers.length; i++) {
+        statList.push(chamberMembers[i][statistic]);
+    }
+    statList.sort(function (a, b) {
+        return a - b
+    });
+    let highestBot = statList[Math.round(statList.length / 10) - 1]; //top of the bottom 10%
+    let bottom10Pct = [];
+    bottom10Pct = chamberMembers.filter(function (member) {
+        return member[statistic] <= highestBot
+    });
+    bottom10Pct.sort((a, b) => (a[statistic] > b[statistic]) ? 1 : -1);
+    return bottom10Pct;
+
+}
 //function for adding Ordinal Suffixes (1st 2nd 3rd etc)
 function addOrdinalSuffix(num) {
     num += "";
@@ -506,7 +478,7 @@ function tabulateChamberData(chamberData) {
             "<tr>" +
             "<td> <a href='" + chamberMembers[i].url + "'>" + fullName + "</a></td>" +
             "<td class='text-center' value=" + chamberMembers[i].party + ">" + chamberMembers[i].party + "</td>" +
-            "<td class='text-center'>" + chamberMembers[i].state + "</td>" +
+            "<td class='text-center' value='" + chamberMembers[i].state + "'>" + chamberMembers[i].state + "</td>" +
             "<td class='text-center'>" + chamberMembers[i].seniority + "</td>" +
             "<td class='text-center'>" + chamberMembers[i].votes_with_party_pct + "%</td>" +
             "</tr>"
