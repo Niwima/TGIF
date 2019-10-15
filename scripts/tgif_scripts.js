@@ -252,6 +252,7 @@ function tabulateMostEngaged(chamberData) {
 
 function tabulateLeastEngaged(chamberData) {
     chamberStatistics = makeStatisticsObject(chamberData);
+    let fullName;
     let tableContents = "<caption style='caption-side: top;'> Least Engaged </caption>" +
         "<thead>" +
         "<tr>" +
