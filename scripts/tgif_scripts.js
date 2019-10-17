@@ -1,65 +1,96 @@
-runFunctionsForPage()
+/*
 
-function runFunctionsForPage() {
-    if //attendance_house 
-    (window.location.href.endsWith('attendance_house.html')) {
+let senateUrl = "https://api.propublica.org/congress/v1/113/senate/members.json";
+let houseUrl = "https://api.propublica.org/congress/v1/113/house/members.json";
+let houseData;
+let senateData;
 
-        document.getElementById("chamber-glance-house").innerHTML =
-            tabulateChamberGlance(houseData);
+fetch(houseUrl, {
+        method: "GET",
+        headers: {
+            'X-API-Key': 'ukjsKe0KE7iXvEjs6uYET9kd2ElifQ11XLOSxXaY'
+        }
+    })
+    .then(function (response) {
+        if (response.ok) {
+            houseData = response.json();
+            console.log(response.json())
+            console.log(houseData)
+        }
+    })
+*/
 
-        document.getElementById("most-engaged-house").innerHTML =
-            tabulateMostEngaged(houseData);
 
-        document.getElementById("least-engaged-house").innerHTML =
-            tabulateLeastEngaged(houseData);
-    } else if //attendance_senate.html
-    (window.location.href.endsWith('attendance_senate.html')) {
-        document.getElementById("chamber-glance-senate").innerHTML =
-            tabulateChamberGlance(senateData);
+pageSetup()
 
-        document.getElementById("most-engaged-senate").innerHTML =
-            tabulateMostEngaged(senateData);
+function pageSetup() {
+    switch (window.location.href.substr(-16)) {
+        case 'dance_house.html':
 
-        document.getElementById("least-engaged-senate").innerHTML =
-            tabulateLeastEngaged(senateData);
-    } else if
-    //loyalty_house.html
-    (window.location.href.endsWith('loyalty_house.html')) {
-        document.getElementById("chamber-glance-house").innerHTML =
-            tabulateChamberGlance(houseData);
+            document.getElementById("chamber-glance-house").innerHTML =
+                tabulateChamberGlance(houseData);
 
-        document.getElementById("most-loyal-house").innerHTML =
-            tabulateMostLoyal(houseData);
+            document.getElementById("most-engaged-house").innerHTML =
+                tabulateMostEngaged(houseData);
 
-        document.getElementById("least-loyal-house").innerHTML =
-            tabulateLeastLoyal(houseData);
-    } else if
-    //loyalty_senate.html
-    (window.location.href.endsWith('loyalty_senate.html')) {
-        document.getElementById("chamber-glance-senate").innerHTML =
-            tabulateChamberGlance(senateData);
+            document.getElementById("least-engaged-house").innerHTML =
+                tabulateLeastEngaged(houseData);
 
-        document.getElementById("most-loyal-senate").innerHTML =
-            tabulateMostLoyal(senateData);
+            break;
 
-        document.getElementById("least-loyal-senate").innerHTML =
-            tabulateLeastLoyal(senateData);
-    } else if
-    //house_data.html
-    (window.location.href.endsWith('house_data.html')) {
-        document.getElementById("chamber-data-house").innerHTML =
-            tabulateChamberData(houseData);
-        document.getElementById("state-select").innerHTML =
-            buildDropdown(houseData);
-        tableFilters('chamber-data-house', "state-select");
-    } else if
-    //senate_data.html
-    (window.location.href.endsWith('senate_data.html')) {
-        document.getElementById("chamber-data-senate").innerHTML =
-            tabulateChamberData(senateData);
-        document.getElementById("state-select").innerHTML =
-            buildDropdown(senateData);
-        tableFilters('chamber-data-senate');
+        case 'ance_senate.html':
+
+            document.getElementById("chamber-glance-senate").innerHTML =
+                tabulateChamberGlance(senateData);
+
+            document.getElementById("most-engaged-senate").innerHTML =
+                tabulateMostEngaged(senateData);
+
+            document.getElementById("least-engaged-senate").innerHTML =
+                tabulateLeastEngaged(senateData);
+
+            break;
+
+        case 'yalty_house.html':
+
+            document.getElementById("chamber-glance-house").innerHTML =
+                tabulateChamberGlance(houseData);
+
+            document.getElementById("most-loyal-house").innerHTML =
+                tabulateMostLoyal(houseData);
+
+            document.getElementById("least-loyal-house").innerHTML =
+                tabulateLeastLoyal(houseData);
+
+            break;
+        case 'alty_senate.html':
+            document.getElementById("chamber-glance-senate").innerHTML =
+                tabulateChamberGlance(senateData);
+
+            document.getElementById("most-loyal-senate").innerHTML =
+                tabulateMostLoyal(senateData);
+
+            document.getElementById("least-loyal-senate").innerHTML =
+                tabulateLeastLoyal(senateData);
+            break;
+
+        case 'senate_data.html':
+
+            document.getElementById("chamber-data-senate").innerHTML =
+                tabulateChamberData(senateData);
+            document.getElementById("state-select").innerHTML =
+                buildDropdown(senateData);
+            tableFilters('chamber-data-senate');
+            break;
+
+        case '/house_data.html':
+
+            document.getElementById("chamber-data-house").innerHTML =
+                tabulateChamberData(houseData);
+            document.getElementById("state-select").innerHTML =
+                buildDropdown(houseData);
+            tableFilters('chamber-data-house', "state-select");
+            break;
     }
 }
 
@@ -81,7 +112,7 @@ function buildDropdown(chamberData) {
     return stateOptions;
 }
 
-//tableFilters
+//tableFilters master function
 
 function tableFilters(tableID) {
     let table = document.getElementById(tableID);
@@ -118,7 +149,7 @@ function tableFilters(tableID) {
     });
 }
 
-//filterByPartyAndState
+//filterByPartyAndState subfunction
 function filterByPartyAndState(tableRows, parties, states) {
     let rowParty
     let rowState
