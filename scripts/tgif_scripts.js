@@ -1,98 +1,135 @@
-/*
-
-let senateUrl = "https://api.propublica.org/congress/v1/113/senate/members.json";
-let houseUrl = "https://api.propublica.org/congress/v1/113/house/members.json";
-let houseData;
-let senateData;
-
-fetch(houseUrl, {
-        method: "GET",
-        headers: {
-            'X-API-Key': 'ukjsKe0KE7iXvEjs6uYET9kd2ElifQ11XLOSxXaY'
-        }
-    })
-    .then(function (response) {
-        if (response.ok) {
-            houseData = response.json();
-            console.log(response.json())
-            console.log(houseData)
-        }
-    })
-*/
-
+//experiment
 
 pageSetup()
 
+//master page set up function which calls for API depending on the page
+
 function pageSetup() {
+    let senateUrl = "https://api.propublica.org/congress/v1/113/senate/members.json";
+    let houseUrl = "https://api.propublica.org/congress/v1/113/house/members.json";
+    let houseData;
+    let senateData;
+    if (window.location.href.includes('house')) {
+        fetch(houseUrl, {
+                method: "GET",
+                headers: {
+                    'X-API-Key': 'ukjsKe0KE7iXvEjs6uYET9kd2ElifQ11XLOSxXaY'
+                }
+            })
+            .then(function (response) {
+                if (response.ok) {
+                    houseData = response.json();
+                    return houseData;
+                } else {
+                    console.log("it's not ok!");
+                }
+            })
+            .then(function (houseData) {
+                housePagesSetup(houseData);
+            })
+
+
+    } else
+
+    if (window.location.href.includes('senate')) {
+        fetch(senateUrl, {
+                method: "GET",
+                headers: {
+                    'X-API-Key': 'ukjsKe0KE7iXvEjs6uYET9kd2ElifQ11XLOSxXaY'
+                }
+            })
+            .then(function (response) {
+                if (response.ok) {
+                    senateData = response.json();
+                    return senateData;
+                } else {
+                    console.log("it's not ok!");
+                }
+            })
+            .then(function (senateData) {
+                senatePagesSetup(senateData);
+            })
+    }
+
+}
+
+//subfunctions to set up pages based on chamber
+function senatePagesSetup(data) {
     switch (window.location.href.substr(-16)) {
-        case 'dance_house.html':
-
-            document.getElementById("chamber-glance-house").innerHTML =
-                tabulateChamberGlance(houseData);
-
-            document.getElementById("most-engaged-house").innerHTML =
-                tabulateMostEngaged(houseData);
-
-            document.getElementById("least-engaged-house").innerHTML =
-                tabulateLeastEngaged(houseData);
-
-            break;
-
         case 'ance_senate.html':
 
             document.getElementById("chamber-glance-senate").innerHTML =
-                tabulateChamberGlance(senateData);
+                tabulateChamberGlance(data);
 
             document.getElementById("most-engaged-senate").innerHTML =
-                tabulateMostEngaged(senateData);
+                tabulateMostEngaged(data);
 
             document.getElementById("least-engaged-senate").innerHTML =
-                tabulateLeastEngaged(senateData);
-
-            break;
-
-        case 'yalty_house.html':
-
-            document.getElementById("chamber-glance-house").innerHTML =
-                tabulateChamberGlance(houseData);
-
-            document.getElementById("most-loyal-house").innerHTML =
-                tabulateMostLoyal(houseData);
-
-            document.getElementById("least-loyal-house").innerHTML =
-                tabulateLeastLoyal(houseData);
+                tabulateLeastEngaged(data);
 
             break;
         case 'alty_senate.html':
             document.getElementById("chamber-glance-senate").innerHTML =
-                tabulateChamberGlance(senateData);
+                tabulateChamberGlance(data);
 
             document.getElementById("most-loyal-senate").innerHTML =
-                tabulateMostLoyal(senateData);
+                tabulateMostLoyal(data);
 
             document.getElementById("least-loyal-senate").innerHTML =
-                tabulateLeastLoyal(senateData);
+                tabulateLeastLoyal(data);
             break;
-
         case 'senate_data.html':
 
             document.getElementById("chamber-data-senate").innerHTML =
-                tabulateChamberData(senateData);
+                tabulateChamberData(data);
             document.getElementById("state-select").innerHTML =
-                buildDropdown(senateData);
+                buildDropdown(data);
             tableFilters('chamber-data-senate');
             break;
 
+    }
+}
+
+function housePagesSetup(data) {
+    switch (window.location.href.substr(-16)) {
+        case 'dance_house.html':
+
+            document.getElementById("chamber-glance-house").innerHTML =
+                tabulateChamberGlance(data);
+
+            document.getElementById("most-engaged-house").innerHTML =
+                tabulateMostEngaged(data);
+
+            document.getElementById("least-engaged-house").innerHTML =
+                tabulateLeastEngaged(data);
+
+            break;
+        case 'yalty_house.html':
+
+            document.getElementById("chamber-glance-house").innerHTML =
+                tabulateChamberGlance(data);
+
+            document.getElementById("most-loyal-house").innerHTML =
+                tabulateMostLoyal(data);
+
+            document.getElementById("least-loyal-house").innerHTML =
+                tabulateLeastLoyal(data);
+
+            break;
         case '/house_data.html':
 
             document.getElementById("chamber-data-house").innerHTML =
-                tabulateChamberData(houseData);
+                tabulateChamberData(data);
             document.getElementById("state-select").innerHTML =
-                buildDropdown(houseData);
+                buildDropdown(data);
             tableFilters('chamber-data-house', "state-select");
             break;
+
+
     }
 }
+
+
 
 //build dropdown
 function buildDropdown(chamberData) {

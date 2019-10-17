@@ -1,4 +1,4 @@
-let senateData = 
+let senateData1 = 
 
 {
     "status":"OK",

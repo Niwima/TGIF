@@ -1,4 +1,4 @@
-let houseData =
+let houseData1 =
 
 {
     "status":"OK",
