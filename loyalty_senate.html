@@ -8,6 +8,7 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="./styles/tgif_styles.css">
   <title>TGIF Senate Loyalty</title>
 </head>
 
@@ -78,18 +79,20 @@
 
     <div class="row">
 
-        <div class="col-md-6">
-          <h2>Party Loyalty</h2>
-          <p>Those who consider themselves to be strong partisans, strong Democrats and strong Republicans respectively,
-            tend to be the most faithful in voting for their party's nominee for office and legislation that backs their
-            party's agenda. </p>
-        </div>
-  
-        <div class="col-md-6">
-          <table class='table table-md table-hover table-responsive' id='chamber-glance-senate'></table>
-        </div>
+      <div class="col-md-6">
+        <h2>Party Loyalty</h2>
+        <p>Those who consider themselves to be strong partisans, strong Democrats and strong Republicans respectively,
+          tend to be the most faithful in voting for their party's nominee for office and legislation that backs their
+          party's agenda. </p>
+      </div>
 
-</div>
+      <div class="col-md-6 d-flex flex-wrap align-items-center justify-content-center">
+        <div id="spinner" class="spinner-border text-primary" role="status">
+        </div>
+        <table class='table table-md table-hover table-responsive' id='chamber-glance-senate'></table>
+      </div>
+
+    </div>
 
 
     <div class="row">
@@ -109,8 +112,7 @@
     </div>
 
   </div>
-  <script src="./scripts/pro-congress-113-senate.js"></script>
-  <script src="./scripts/pro-congress-113-house.js"></script>
+
   <script src="./scripts/tgif_scripts.js"></script>
 
   <!-- Optional JavaScript -->

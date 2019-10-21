@@ -8,6 +8,7 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="./styles/tgif_styles.css">
   <title>TGIF SENATE ATTENDANCE</title>
 </head>
 
@@ -90,7 +91,12 @@
           tiebreaking vote.</p>
       </div>
 
-      <div class="col-md-6 d-flex flex-wrap align-items-center">
+
+      
+
+      <div class="col-md-6 d-flex flex-wrap align-items-center justify-content-center">
+          <div id="spinner" class="spinner-border text-primary" role="status">
+            </div>
         <table class='table table-hover table-responsive' id='chamber-glance-senate'></table>
       </div>
     </div>
@@ -109,11 +115,9 @@
         </footer>
       </div>
     </div>
-    
+
   </div>
 
-  <script src="./scripts/pro-congress-113-house.js"></script>
-  <script src="./scripts/pro-congress-113-senate.js"></script>
   <script src="./scripts/tgif_scripts.js"></script>
 
   <!-- Optional JavaScript -->

@@ -1,6 +1,6 @@
 //experiment
 
-pageSetup()
+pageSetup();
 
 //master page set up function which calls for API depending on the page
 
@@ -25,6 +25,7 @@ function pageSetup() {
                 }
             })
             .then(function (houseData) {
+                killSpinner()
                 housePagesSetup(houseData);
             })
 
@@ -47,11 +48,17 @@ function pageSetup() {
                 }
             })
             .then(function (senateData) {
+                killSpinner()
                 senatePagesSetup(senateData);
             })
     }
 
 }
+
+function killSpinner(){
+    document.getElementById("spinner").style.display = "none";
+}
+    
 
 //subfunctions to set up pages based on chamber
 function senatePagesSetup(data) {
@@ -133,7 +140,7 @@ function housePagesSetup(data) {
 
 //build dropdown
 function buildDropdown(chamberData) {
-    let states = []
+    let states = [];
     let stateOptions = "<option value='All' selected >All</option>";
     for (let i = 0; i < chamberData.results[0].members.length; i++)
         if (states.includes(chamberData.results[0].members[i].state) === false) {
@@ -188,8 +195,8 @@ function tableFilters(tableID) {
 
 //filterByPartyAndState subfunction
 function filterByPartyAndState(tableRows, parties, states) {
-    let rowParty
-    let rowState
+    let rowParty;
+    let rowState;
     for (let i = 1; i < tableRows.length; i++) {
         rowParty = tableRows[i].getElementsByTagName("td")[1].getAttribute('value');
         rowState = tableRows[i].getElementsByTagName("td")[2].getAttribute('value');
@@ -203,10 +210,10 @@ function filterByPartyAndState(tableRows, parties, states) {
 
 //make at a glance tables
 function tabulateChamberGlance(chamberData) {
-    chamberStatistics = makeStatisticsObject(chamberData)
+    chamberStatistics = makeStatisticsObject(chamberData);
     chamberName = chamberData.results[0].chamber;
     if (chamberName === "House") {
-        chamberName = "House of Representatives"
+        chamberName = "House of Representatives";
     }
     congressNumber = addOrdinalSuffix(chamberData.results[0].congress);
 

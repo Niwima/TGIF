@@ -8,7 +8,7 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+  <link rel="stylesheet" href="./styles/tgif_styles.css">
   <title>TGIF SENATE DATA</title>
 </head>
 
@@ -97,39 +97,36 @@
         House.
       </p>
 
-      <div class="card">
-        <div class="row">
-          <div class="col-12 d-flex justify-content-start">
-            <div class="p-1 font-weight-bold">
-              Filter By Party:
-            </div>
-            <div class="p-1">
-              <input class="d-inline" type="checkbox" name="table-filter" id="democrat-checkbox" value="D"></input>
-              <label class="d-inline" for="democrat-checkbox">Democrat</label>
-            </div>
-            <div class="p-1">
-              <input class="d-inline" type="checkbox" name="table-filter" id="republican-checkbox" value="R">
-              <label class="d-inline" for="republican-checkbox">Republican</label>
-            </div>
-            <div class="p-1">
-              <input class="d-inline" type="checkbox" name="table-filter" id="independent-checkbox" value="I">
-              <label class="d-inline" for="independent-checkbox">Independent</label>
-            </div>
-            <div class="p-1">
-              <div class="d-inline p-1 font-weight-bold">
-                Filter By State:
-              </div>
-              <select class="d-inline" name="state" id="state-select">
-
-              </select>
-            </div>
+      <div class="row d-flex justify-content-start">
+        <div class="p-2 font-weight-bold">
+          Filter By Party:
+        </div>
+        <div class="p-2 text-center">
+          <input class="checkbox d-inline" type="checkbox" name="table-filter" id="democrat-checkbox" value="D"></input>
+          <label class="d-inline" for="democrat-checkbox">Democrat</label>
+        </div>
+        <div class="p-2 text-center">
+          <input class="checkbox d-inline" type="checkbox" name="table-filter" id="republican-checkbox" value="R">
+          <label class="d-inline" for="republican-checkbox">Republican</label>
+        </div>
+        <div class="p-2 text-center">
+          <input class="checkbox d-inline" type="checkbox" name="table-filter" id="independent-checkbox" value="I">
+          <label class="d-inline" for="independent-checkbox">Independent</label>
+        </div>
+        <div class="p-2 text-center">
+          <div class="d-inline p-1 font-weight-bold">
+            Filter By State:
           </div>
+          <select class="d-inline" name="state" id="state-select">
+          </select>
         </div>
       </div>
 
 
       <div class="row">
-        <div class="col-12">
+        <div class="col-12 d-flex flex-wrap align-items-center justify-content-center">
+          <div id="spinner" class="spinner-border text-primary" role="status">
+          </div>
           <table class='table table-hover' id="chamber-data-senate"></table>
         </div>
       </div>
@@ -146,8 +143,7 @@
       </div>
     </div>
   </div>
-  <script src="./scripts/pro-congress-113-house.js"></script>
-  <script src="./scripts/pro-congress-113-senate.js"></script>
+
   <script src="./scripts/tgif_scripts.js"></script>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
